@@ -49,7 +49,6 @@ func (d sessionDelegate) Render(w io.Writer, m list.Model, index int, listItem l
 	fmt.Fprint(w, fn(str))
 }
 
-
 func loadSessions() []list.Item {
 	cmd := exec.Command("tmux", "list-sessions")
 	out, err := cmd.Output()
@@ -76,6 +75,14 @@ func switchSession(session string) {
 		fmt.Println("Failed to run command")
 	}
 	fmt.Println(string(out))
+}
+
+func newSession(session string) {
+	cmd := exec.Command("tmux", "new", "-d", "-s", session)
+	_, err := cmd.Output()
+	if err != nil {
+		fmt.Println("Failed to run command")
+	}
 }
 
 func deleteSession(session string) {

@@ -6,13 +6,15 @@ import (
 
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
+	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
 type model struct {
-	sessionList list.Model
-	searchTerm  string
-	addNew      bool
+	sessionList  list.Model
+	searchTerm   string
+	addNew       bool
+	sessionInput textinput.Model
 }
 
 func (m model) Init() tea.Cmd {
@@ -20,6 +22,7 @@ func (m model) Init() tea.Cmd {
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		h, v := docStyle.GetFrameSize()
@@ -27,7 +30,16 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	case tea.KeyMsg:
 		switch msg.String() {
+		case "esc":
+			m.addNew = false
+			return m, nil
 		case "enter":
+			if m.addNew {
+				newSession(m.sessionInput.Value())
+				cmd = m.sessionList.SetItems(loadSessions())
+				m.addNew = false
+				return m, cmd
+			}
 			i, ok := m.sessionList.SelectedItem().(session)
 			if ok {
 				switchSession(string(i))
@@ -42,14 +54,25 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.sessionList.ResetSelected()
 				return m, nil
 			}
+		case "n":
+			m.addNew = true
+			m.sessionInput.Focus()
+			return m, nil
 		}
 	}
-	var cmd tea.Cmd
-	m.sessionList, cmd = m.sessionList.Update(msg)
+	if m.addNew {
+		m.sessionInput, cmd = m.sessionInput.Update(msg)
+	} else {
+		m.sessionList, cmd = m.sessionList.Update(msg)
+	}
 	return m, cmd
 }
 
 func (m model) View() string {
+	input := fmt.Sprintf("New Session Name\n\n%s\n\n%s\n", m.sessionInput.View(), "(esc to cancel)")
+	if m.addNew {
+		return input
+	}
 	return m.sessionList.View()
 }
 
@@ -81,8 +104,10 @@ func main() {
 	l.Styles.HelpStyle = helpStyle
 
 	m := model{
-		sessionList: l,
-		searchTerm:  "",
+		sessionList:  l,
+		searchTerm:   "",
+		addNew:       false,
+		sessionInput: textinput.New(),
 	}
 	p := tea.NewProgram(m)
 	if _, err := p.Run(); err != nil {
