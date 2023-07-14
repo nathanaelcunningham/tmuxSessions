@@ -108,6 +108,10 @@ func additionalKeys() []key.Binding {
 			key.WithKeys("n"),
 			key.WithHelp("n", "new session"),
 		),
+		key.NewBinding(
+			key.WithKeys("r"),
+			key.WithHelp("r", "rename session"),
+		),
 	}
 }
 
