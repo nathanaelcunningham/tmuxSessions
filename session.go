@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io"
-	"os/exec"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/list"
@@ -50,45 +49,11 @@ func (d sessionDelegate) Render(w io.Writer, m list.Model, index int, listItem l
 }
 
 func loadSessions() []list.Item {
-	cmd := exec.Command("tmux", "list-sessions")
-	out, err := cmd.Output()
-	if err != nil {
-		fmt.Println("Failed to run command")
-	}
-	split := strings.Split(string(out), "\n")
-
 	var sessions []list.Item
+	foundSessions := getSessions()
 
-	for _, s := range split {
-		filter := strings.SplitN(s, ":", 2)
-		if len(filter[0]) > 0 {
-			sessions = append(sessions, session(filter[0]))
-		}
+	for _, s := range foundSessions {
+		sessions = append(sessions, session(s))
 	}
 	return sessions
-}
-
-func switchSession(session string) {
-	cmd := exec.Command("tmux", "switch-client", "-t", session)
-	out, err := cmd.Output()
-	if err != nil {
-		fmt.Println("Failed to run command")
-	}
-	fmt.Println(string(out))
-}
-
-func newSession(session string) {
-	cmd := exec.Command("tmux", "new", "-d", "-s", session)
-	_, err := cmd.Output()
-	if err != nil {
-		fmt.Println("Failed to run command")
-	}
-}
-
-func deleteSession(session string) {
-	cmd := exec.Command("tmux", "kill-session", "-t", session)
-	_, err := cmd.Output()
-	if err != nil {
-		fmt.Println("Failed to run command")
-	}
 }
