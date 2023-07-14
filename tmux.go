@@ -49,3 +49,11 @@ func deleteSession(session string) {
 		fmt.Println("Failed to run command")
 	}
 }
+
+func renameSession(session, newSession string) {
+	cmd := exec.Command("tmux", "rename-session", "-t", session, newSession)
+	_, err := cmd.Output()
+	if err != nil {
+		fmt.Println("Failed to run command")
+	}
+}

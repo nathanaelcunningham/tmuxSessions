@@ -14,6 +14,7 @@ type model struct {
 	sessionList  list.Model
 	searchTerm   string
 	addNew       bool
+	rename       bool
 	sessionInput textinput.Model
 }
 
@@ -32,6 +33,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 		case "esc":
 			m.addNew = false
+			m.rename = false
 			return m, nil
 		case "enter":
 			if m.addNew {
@@ -39,6 +41,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				cmd = m.sessionList.SetItems(loadSessions())
 				m.addNew = false
 				return m, cmd
+			}
+			if m.rename {
+				i, ok := m.sessionList.SelectedItem().(session)
+				if ok {
+					renameSession(string(i), m.sessionInput.Value())
+					cmd = m.sessionList.SetItems(loadSessions())
+					m.rename = false
+					return m, cmd
+				}
 			}
 			i, ok := m.sessionList.SelectedItem().(session)
 			if ok {
@@ -54,13 +65,20 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.sessionList.ResetSelected()
 				return m, nil
 			}
+		case "r":
+			i, ok := m.sessionList.SelectedItem().(session)
+			if ok {
+				m.rename = true
+				m.sessionInput.SetValue(string(i))
+				m.sessionInput.Focus()
+			}
 		case "n":
 			m.addNew = true
 			m.sessionInput.Focus()
 			return m, nil
 		}
 	}
-	if m.addNew {
+	if m.addNew || m.rename {
 		m.sessionInput, cmd = m.sessionInput.Update(msg)
 	} else {
 		m.sessionList, cmd = m.sessionList.Update(msg)
@@ -69,9 +87,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-	input := fmt.Sprintf("New Session Name\n\n%s\n\n%s\n", m.sessionInput.View(), "(esc to cancel)")
+	newSession := fmt.Sprintf("New Session Name\n\n%s\n\n%s\n", m.sessionInput.View(), "(esc to cancel)")
+	renameSession := fmt.Sprintf("Rename Session\n\n%s\n\n%s\n", m.sessionInput.View(), "(esc to cancel)")
 	if m.addNew {
-		return input
+		return newSession
+	}
+	if m.rename {
+		return renameSession
 	}
 	return m.sessionList.View()
 }
