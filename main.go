@@ -11,11 +11,12 @@ import (
 )
 
 type model struct {
-	sessionList  list.Model
-	searchTerm   string
-	addNew       bool
-	rename       bool
-	sessionInput textinput.Model
+	sessionList   list.Model
+	searchTerm    string
+	activeSession string
+	addNew        bool
+	rename        bool
+	sessionInput  textinput.Model
 }
 
 func (m model) Init() tea.Cmd {
@@ -128,6 +129,14 @@ func main() {
 	l.Styles.Title = titleStyle
 	l.Styles.PaginationStyle = paginationStyle
 	l.Styles.HelpStyle = helpStyle
+
+	//set active session
+	sess := activeSessionIndex()
+	if sess > 0 {
+		for i := 0; i < sess; i++ {
+			l.CursorDown()
+		}
+	}
 
 	m := model{
 		sessionList:  l,

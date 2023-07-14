@@ -25,6 +25,44 @@ func getSessions() []string {
 	return sessions
 }
 
+func activeSession() string {
+	cmd := exec.Command("tmux", "list-sessions")
+	out, err := cmd.Output()
+	if err != nil {
+		fmt.Println("Failed to run command")
+	}
+	split := strings.Split(string(out), "\n")
+
+	activeSession := ""
+
+	for _, s := range split {
+		if strings.Contains(s, "active") {
+			filter := strings.SplitN(s, ":", 2)
+			activeSession = filter[0]
+		}
+	}
+
+	return activeSession
+}
+func activeSessionIndex() int {
+	cmd := exec.Command("tmux", "list-sessions")
+	out, err := cmd.Output()
+	if err != nil {
+		fmt.Println("Failed to run command")
+	}
+	split := strings.Split(string(out), "\n")
+
+	index := 0
+
+	for i, s := range split {
+		if strings.Contains(s, "attached") {
+			index = i
+		}
+	}
+
+	return index
+}
+
 func switchSession(session string) {
 	cmd := exec.Command("tmux", "switch-client", "-t", session)
 	out, err := cmd.Output()
