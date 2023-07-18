@@ -10,6 +10,14 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
+type ViewType int
+
+const (
+	NewSession ViewType = iota
+	RenameSession
+	SessionList
+)
+
 type model struct {
 	sessionList   list.Model
 	searchTerm    string
@@ -132,11 +140,7 @@ func main() {
 
 	//set active session
 	sess := activeSessionIndex()
-	if sess > 0 {
-		for i := 0; i < sess; i++ {
-			l.CursorDown()
-		}
-	}
+	l.Select(sess)
 
 	m := model{
 		sessionList:  l,
