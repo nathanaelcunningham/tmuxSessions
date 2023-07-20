@@ -1,4 +1,4 @@
-package main
+package tmux
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func getSessions() []string {
+func GetSessions() []string {
 	cmd := exec.Command("tmux", "list-sessions")
 	out, err := cmd.Output()
 	if err != nil {
@@ -25,7 +25,7 @@ func getSessions() []string {
 	return sessions
 }
 
-func activeSession() string {
+func ActiveSession() string {
 	cmd := exec.Command("tmux", "list-sessions")
 	out, err := cmd.Output()
 	if err != nil {
@@ -44,7 +44,7 @@ func activeSession() string {
 
 	return activeSession
 }
-func activeSessionIndex() int {
+func ActiveSessionIndex() int {
 	cmd := exec.Command("tmux", "list-sessions")
 	out, err := cmd.Output()
 	if err != nil {
@@ -63,7 +63,7 @@ func activeSessionIndex() int {
 	return index
 }
 
-func switchSession(session string) {
+func SwitchSession(session string) {
 	cmd := exec.Command("tmux", "switch-client", "-t", session)
 	out, err := cmd.Output()
 	if err != nil {
@@ -72,7 +72,7 @@ func switchSession(session string) {
 	fmt.Println(string(out))
 }
 
-func newSession(session string) {
+func NewSession(session string) {
 	cmd := exec.Command("tmux", "new", "-d", "-s", session)
 	_, err := cmd.Output()
 	if err != nil {
@@ -80,7 +80,7 @@ func newSession(session string) {
 	}
 }
 
-func deleteSession(session string) {
+func DeleteSession(session string) {
 	cmd := exec.Command("tmux", "kill-session", "-t", session)
 	_, err := cmd.Output()
 	if err != nil {
@@ -88,7 +88,7 @@ func deleteSession(session string) {
 	}
 }
 
-func renameSession(session, newSession string) {
+func RenameSession(session, newSession string) {
 	cmd := exec.Command("tmux", "rename-session", "-t", session, newSession)
 	_, err := cmd.Output()
 	if err != nil {
