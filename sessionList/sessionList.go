@@ -47,31 +47,33 @@ func (m SessionList) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.list.SetSize(msg.Width-h, msg.Height-v)
 		return m, nil
 	case tea.KeyMsg:
-		switch {
-		case key.Matches(msg, keys.Select):
-			i, ok := m.list.SelectedItem().(SessionItem)
-			if ok {
-				tmux.SwitchSession(string(i))
-				return m, tea.Quit
-			}
-		case key.Matches(msg, keys.Delete):
-			i, ok := m.list.SelectedItem().(SessionItem)
-			index := m.list.Cursor()
-			if ok {
-				tmux.DeleteSession(string(i))
-				m.list.RemoveItem(index)
-				m.list.ResetSelected()
-			}
-		case key.Matches(msg, keys.Rename):
-			i, ok := m.list.SelectedItem().(SessionItem)
-			index := m.list.Index()
-			if ok {
-				cmd := commands.RenameSession(index, string(i))
+		if state := m.list.FilterState(); state != list.Filtering {
+			switch {
+			case key.Matches(msg, keys.Select):
+				i, ok := m.list.SelectedItem().(SessionItem)
+				if ok {
+					tmux.SwitchSession(string(i))
+					return m, tea.Quit
+				}
+			case key.Matches(msg, keys.Delete):
+				i, ok := m.list.SelectedItem().(SessionItem)
+				index := m.list.Cursor()
+				if ok {
+					tmux.DeleteSession(string(i))
+					m.list.RemoveItem(index)
+					m.list.ResetSelected()
+				}
+			case key.Matches(msg, keys.Rename):
+				i, ok := m.list.SelectedItem().(SessionItem)
+				index := m.list.Index()
+				if ok {
+					cmd := commands.RenameSession(index, string(i))
+					cmds = tea.Batch(cmds, cmd)
+				}
+			case key.Matches(msg, keys.New):
+				cmd := commands.NewSession()
 				cmds = tea.Batch(cmds, cmd)
 			}
-		case key.Matches(msg, keys.New):
-			cmd := commands.NewSession()
-			cmds = tea.Batch(cmds, cmd)
 		}
 	}
 	model, cmd := m.list.Update(msg)
