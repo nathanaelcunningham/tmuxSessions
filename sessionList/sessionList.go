@@ -27,6 +27,8 @@ func New() SessionList {
 	items := loadSessions(sess)
 
 	l := NewDelegate(items)
+	currentSession := tmux.ActiveSessionIndex()
+	l.Select(currentSession)
 
 	return SessionList{
 		list: l,
