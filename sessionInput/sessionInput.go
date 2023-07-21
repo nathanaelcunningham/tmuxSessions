@@ -24,6 +24,7 @@ func (m SessionInput) Init() tea.Cmd {
 func (m SessionInput) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	m.input, cmd = m.input.Update(msg)
+	m.input.Focus()
 	return m, cmd
 }
 

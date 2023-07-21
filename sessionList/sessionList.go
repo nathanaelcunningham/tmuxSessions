@@ -71,7 +71,7 @@ func (m SessionList) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// return m, nil
 		case key.Matches(msg, keys.New):
 			cmd := commands.NewSession()
-			tea.Batch(cmds, cmd)
+			cmds = tea.Batch(cmds, cmd)
 		}
 	}
 	model, cmd := m.list.Update(msg)

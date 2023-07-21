@@ -34,7 +34,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		}
 	case commands.NewSessionCmd:
-		fmt.Println("here")
 		m.state = common.NewSession
 	}
 
@@ -54,11 +53,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m model) View() string {
 	switch m.state {
 	case common.NewSession:
-		return m.sessionInput.View() + fmt.Sprintf(" State: %d\n", m.state)
+		return m.sessionInput.View()
 	case common.SessionList:
-		return m.sessionList.View() + fmt.Sprintf(" State: %d\n", m.state)
+		return m.sessionList.View()
 	default:
-		return m.sessionList.View() + fmt.Sprintf(" State: %d\n", m.state)
+		return m.sessionList.View()
 	}
 }
 

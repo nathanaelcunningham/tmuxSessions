@@ -6,6 +6,6 @@ type NewSessionCmd bool
 
 func NewSession() tea.Cmd {
 	return func() tea.Msg {
-		return true
+		return NewSessionCmd(true)
 	}
 }
