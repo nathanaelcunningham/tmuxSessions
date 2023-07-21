@@ -9,16 +9,14 @@ import (
 	"github.com/nathanaelcunningham/tmuxSessions/common"
 	"github.com/nathanaelcunningham/tmuxSessions/sessionInput"
 	"github.com/nathanaelcunningham/tmuxSessions/sessionList"
+	"github.com/nathanaelcunningham/tmuxSessions/tmux"
 )
 
 type model struct {
-	state         common.ViewState
-	sessionList   sessionList.SessionList
-	searchTerm    string
-	activeSession string
-	addNew        bool
-	rename        bool
-	sessionInput  sessionInput.SessionInput
+	state        common.ViewState
+	sessionList  sessionList.SessionList
+	searchTerm   string
+	sessionInput sessionInput.SessionInput
 }
 
 func (m model) Init() tea.Cmd {
@@ -30,11 +28,21 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "ctrl+c", "q":
+		case "ctrl+c":
 			return m, tea.Quit
 		}
 	case commands.NewSessionCmd:
 		m.state = common.NewSession
+	case commands.NewSessionDoneCmd:
+		value := msg.Value
+		tmux.NewSession(value)
+		model := m.sessionList.RefreshSessions()
+		m.sessionList = model
+		m.state = common.SessionList
+	case commands.RenameSessionDoneCmd:
+
+	case commands.InputCancelCmd:
+		m.state = common.SessionList
 	}
 
 	switch m.state {
@@ -46,6 +54,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		model, cmd := m.sessionInput.Update(msg)
 		m.sessionInput = model.(sessionInput.SessionInput)
 		cmds = tea.Batch(cmds, cmd)
+	case common.RenameSession:
+		model, cmd := m.sessionInput.Update(msg)
+		m.sessionInput = model.(sessionInput.SessionInput)
+		cmds = tea.Batch(cmds, cmd)
 	}
 	return m, cmds
 }
@@ -53,6 +65,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m model) View() string {
 	switch m.state {
 	case common.NewSession:
+		return m.sessionInput.View()
+	case common.RenameSession:
 		return m.sessionInput.View()
 	case common.SessionList:
 		return m.sessionList.View()
@@ -68,7 +82,6 @@ func main() {
 		state:        common.SessionList,
 		sessionList:  l,
 		searchTerm:   "",
-		addNew:       false,
 		sessionInput: sessionInput.New(),
 	}
 	p := tea.NewProgram(m)

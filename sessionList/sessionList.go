@@ -60,15 +60,13 @@ func (m SessionList) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.list.RemoveItem(index)
 				m.list.ResetSelected()
 			}
-		// case key.Matches(msg, keys.Rename):
-		//Fire custom command
-		// i, ok := m.list.SelectedItem().(SessionItem)
-		// if ok {
-		// 	m.rename = true
-		// 	m.sessionInput.SetValue(string(i))
-		// 	m.sessionInput.Focus()
-		// }
-		// return m, nil
+		case key.Matches(msg, keys.Rename):
+			i, ok := m.list.SelectedItem().(SessionItem)
+			index := m.list.Index()
+			if ok {
+				cmd := commands.RenameSession(index, string(i))
+				cmds = tea.Batch(cmds, cmd)
+			}
 		case key.Matches(msg, keys.New):
 			cmd := commands.NewSession()
 			cmds = tea.Batch(cmds, cmd)
@@ -82,4 +80,11 @@ func (m SessionList) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m SessionList) View() string {
 	return m.list.View()
+}
+
+func (m SessionList) RefreshSessions() SessionList {
+	sessions := tmux.GetSessions()
+	items := loadSessions(sessions)
+	m.list.SetItems(items)
+	return m
 }

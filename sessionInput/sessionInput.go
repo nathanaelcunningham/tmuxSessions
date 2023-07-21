@@ -1,8 +1,10 @@
 package sessionInput
 
 import (
+	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/nathanaelcunningham/tmuxSessions/commands"
 )
 
 type SessionInput struct {
@@ -22,10 +24,26 @@ func (m SessionInput) Init() tea.Cmd {
 }
 
 func (m SessionInput) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	var cmd tea.Cmd
-	m.input, cmd = m.input.Update(msg)
 	m.input.Focus()
-	return m, cmd
+	var cmds tea.Cmd
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch {
+		case key.Matches(msg, keys.Done):
+			cmd := commands.NewSessionDone(m.input.Value())
+			m.input.Reset()
+			cmds = tea.Batch(cmds, cmd)
+		case key.Matches(msg, keys.Cancel):
+			m.input.Reset()
+			cmd := commands.InputCancel()
+			cmds = tea.Batch(cmds, cmd)
+		}
+	}
+
+	model, cmd := m.input.Update(msg)
+	m.input = model
+	cmds = tea.Batch(cmds, cmd)
+	return m, cmds
 }
 
 func (m SessionInput) View() string {
