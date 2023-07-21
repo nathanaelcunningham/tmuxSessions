@@ -33,14 +33,23 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	case commands.NewSessionCmd:
 		m.state = common.NewSession
-	case commands.NewSessionDoneCmd:
-		value := msg.Value
-		tmux.NewSession(value)
-		model := m.sessionList.RefreshSessions()
-		m.sessionList = model
-		m.state = common.SessionList
-	case commands.RenameSessionDoneCmd:
-
+	case commands.RenameSessionCmd:
+		m.state = common.RenameSession
+		model := m.sessionInput.SetValue(msg.Value)
+		m.sessionInput = model
+	case commands.InputDoneCmd:
+		if m.state == common.NewSession {
+			tmux.NewSession(msg.Value)
+			model := m.sessionList.RefreshSessions()
+			m.sessionList = model
+			m.state = common.SessionList
+		} else {
+			selected := m.sessionList.Selected()
+			tmux.RenameSession(selected, msg.Value)
+			model := m.sessionList.RefreshSessions()
+			m.sessionList = model
+			m.state = common.SessionList
+		}
 	case commands.InputCancelCmd:
 		m.state = common.SessionList
 	}

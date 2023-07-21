@@ -88,3 +88,11 @@ func (m SessionList) RefreshSessions() SessionList {
 	m.list.SetItems(items)
 	return m
 }
+
+func (m SessionList) Selected() string {
+	i, ok := m.list.SelectedItem().(SessionItem)
+	if ok {
+		return string(i)
+	}
+	return ""
+}

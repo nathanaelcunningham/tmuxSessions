@@ -30,7 +30,7 @@ func (m SessionInput) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, keys.Done):
-			cmd := commands.NewSessionDone(m.input.Value())
+			cmd := commands.InputDone(m.input.Value())
 			m.input.Reset()
 			cmds = tea.Batch(cmds, cmd)
 		case key.Matches(msg, keys.Cancel):
@@ -48,4 +48,9 @@ func (m SessionInput) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m SessionInput) View() string {
 	return m.input.View()
+}
+
+func (m SessionInput) SetValue(value string) SessionInput {
+	m.input.SetValue(value)
+	return m
 }

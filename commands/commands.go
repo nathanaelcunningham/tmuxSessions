@@ -24,21 +24,16 @@ func RenameSession(index int, value string) tea.Cmd {
 	}
 }
 
-type NewSessionDoneCmd struct {
+type InputDoneCmd struct {
 	Value string
 }
 
-func NewSessionDone(value string) tea.Cmd {
+func InputDone(value string) tea.Cmd {
 	return func() tea.Msg {
-		return NewSessionDoneCmd{
+		return InputDoneCmd{
 			Value: value,
 		}
 	}
-}
-
-type RenameSessionDoneCmd struct {
-	Index int
-	Value string
 }
 
 type InputCancelCmd bool
