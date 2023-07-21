@@ -61,16 +61,16 @@ func (m SessionList) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.list.ResetSelected()
 			}
 		// case key.Matches(msg, keys.Rename):
-			//Fire custom command
-			// i, ok := m.list.SelectedItem().(SessionItem)
-			// if ok {
-			// 	m.rename = true
-			// 	m.sessionInput.SetValue(string(i))
-			// 	m.sessionInput.Focus()
-			// }
-			// return m, nil
+		//Fire custom command
+		// i, ok := m.list.SelectedItem().(SessionItem)
+		// if ok {
+		// 	m.rename = true
+		// 	m.sessionInput.SetValue(string(i))
+		// 	m.sessionInput.Focus()
+		// }
+		// return m, nil
 		case key.Matches(msg, keys.New):
-			cmd := commands.NewSessionCmd()
+			cmd := commands.NewSession()
 			tea.Batch(cmds, cmd)
 		}
 	}

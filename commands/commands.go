@@ -2,10 +2,10 @@ package commands
 
 import tea "github.com/charmbracelet/bubbletea"
 
-type NewSession interface{}
+type NewSessionCmd bool
 
-func NewSessionCmd() tea.Cmd {
+func NewSession() tea.Cmd {
 	return func() tea.Msg {
-		return "new state"
+		return true
 	}
 }
