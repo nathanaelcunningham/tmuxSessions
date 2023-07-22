@@ -1,97 +1,51 @@
 package tmux
 
 import (
+	"encoding/json"
 	"fmt"
-	"os/exec"
-	"strings"
+	"os"
 )
 
-func GetSessions() []string {
-	cmd := exec.Command("tmux", "list-sessions")
-	out, err := cmd.Output()
-	if err != nil {
-		fmt.Println("Failed to run command")
-	}
-	split := strings.Split(string(out), "\n")
-
-	var sessions []string
-
-	for _, s := range split {
-		filter := strings.SplitN(s, ":", 2)
-		if len(filter[0]) > 0 {
-			sessions = append(sessions, filter[0])
-		}
-	}
-	return sessions
+// Load from file
+func LoadSession(name string) Session {
+	return Session{}
 }
 
-func ActiveSession() string {
-	cmd := exec.Command("tmux", "list-sessions")
-	out, err := cmd.Output()
+// Save to file
+func SaveSession(name string) error {
+	session := ConvertSession(name)
+	err := writeToFile(session)
 	if err != nil {
-		fmt.Println("Failed to run command")
+		return err
 	}
-	split := strings.Split(string(out), "\n")
-
-	activeSession := ""
-
-	for _, s := range split {
-		if strings.Contains(s, "active") {
-			filter := strings.SplitN(s, ":", 2)
-			activeSession = filter[0]
-		}
-	}
-
-	return activeSession
-}
-func ActiveSessionIndex() int {
-	cmd := exec.Command("tmux", "list-sessions")
-	out, err := cmd.Output()
-	if err != nil {
-		fmt.Println("Failed to run command")
-	}
-	split := strings.Split(string(out), "\n")
-
-	index := 0
-
-	for i, s := range split {
-		if strings.Contains(s, "attached") {
-			index = i
-		}
-	}
-
-	return index
+	return nil
 }
 
-func SwitchSession(session string) {
-	cmd := exec.Command("tmux", "switch-client", "-t", session)
-	out, err := cmd.Output()
-	if err != nil {
-		fmt.Println("Failed to run command")
+// Get from tmux server
+func ConvertSession(name string) Session {
+	session := Session{
+		Name: name,
 	}
-	fmt.Println(string(out))
+	windows := GetWindows(session.Name)
+
+	for i, window := range windows {
+		panes := GetPanes(session.Name, window.Index)
+		windows[i].Panes = panes
+	}
+
+	session.Windows = windows
+
+	return session
 }
 
-func NewSession(session string) {
-	cmd := exec.Command("tmux", "new", "-d", "-s", session)
-	_, err := cmd.Output()
+func writeToFile(session Session) error {
+	filename := fmt.Sprintf("%s.json", session.Name)
+	file, err := os.Create(filename)
 	if err != nil {
-		fmt.Println("Failed to run command")
+		return err
 	}
-}
+	defer file.Close()
 
-func DeleteSession(session string) {
-	cmd := exec.Command("tmux", "kill-session", "-t", session)
-	_, err := cmd.Output()
-	if err != nil {
-		fmt.Println("Failed to run command")
-	}
-}
-
-func RenameSession(session, newSession string) {
-	cmd := exec.Command("tmux", "rename-session", "-t", session, newSession)
-	_, err := cmd.Output()
-	if err != nil {
-		fmt.Println("Failed to run command")
-	}
+	encoder := json.NewEncoder(file)
+	return encoder.Encode(session)
 }
