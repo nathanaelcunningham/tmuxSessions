@@ -60,6 +60,8 @@ func (m ProjectList) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 						Name:     i.Name,
 						Filepath: i.Path,
 					})
+					cmd := commands.RestoreProject()
+					cmds = tea.Batch(cmds, cmd)
 				}
 			case key.Matches(msg, keys.ViewSessions):
 				cmd := commands.ViewSessions()

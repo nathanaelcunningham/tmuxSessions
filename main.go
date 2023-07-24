@@ -62,6 +62,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		tmux.SaveSession(string(msg))
 		model := m.projectList.RefreshProjects()
 		m.projectList = model
+	case commands.RestoreProjectCmd:
+		model := m.sessionList.RefreshSessions()
+		m.sessionList = model
 	}
 
 	switch m.state {
