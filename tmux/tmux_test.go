@@ -7,7 +7,8 @@ import (
 
 func TestGetWindows(t *testing.T) {
 	session := ActiveSession()
-	GetWindows(session)
+	windows := GetWindows(session)
+	fmt.Printf("%+v\n", windows)
 }
 
 func TestGetPanes(t *testing.T) {
@@ -15,7 +16,7 @@ func TestGetPanes(t *testing.T) {
 	windows := GetWindows(session)
 
 	panes := GetPanes(session, windows[0].Index)
-	fmt.Println("panes: \n", panes)
+	fmt.Printf("panes: \n %+v\n", panes)
 }
 
 func TestConvertSession(t *testing.T) {
@@ -33,6 +34,14 @@ func TestSaveSession(t *testing.T) {
 	}
 }
 
-func TestLoadSession(t *testing.T){
-
+func TestNewWindow(t *testing.T) {
+	name := ActiveSession()
+	window := Window{
+		Index:  2,
+		Name:   "Test",
+		Active: false,
+		Flags:  "",
+		Layout: "",
+	}
+	NewWindow(name, window)
 }

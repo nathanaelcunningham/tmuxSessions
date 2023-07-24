@@ -9,14 +9,14 @@ type Window struct {
 	Index  int
 	Name   string
 	Active bool
+	Flags  string
 	Layout string
-	ID     string
 	Panes  []Pane
 }
 
 type Pane struct {
 	Index  int
-	Size   string
-	ID     string
+	Title  string
+	Path   string
 	Active bool
 }
