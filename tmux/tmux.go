@@ -7,8 +7,14 @@ import (
 )
 
 // Load from file
-func LoadSession(name string) Session {
-	return Session{}
+func RestoreSession(filepath string) error {
+	session, err := loadFromFile(filepath)
+	if err != nil {
+		return err
+	}
+	fmt.Println(session)
+
+	return nil
 }
 
 // Save to file
@@ -38,12 +44,42 @@ func ConvertSession(name string) Session {
 	return session
 }
 
+func loadFromFile(filepath string) (Session, error) {
+	var session Session
+	file, err := os.Open(filepath)
+	if err != nil {
+		return session, err
+	}
+	defer file.Close()
+
+	decoder := json.NewDecoder(file)
+	err = decoder.Decode(&session)
+	if err != nil {
+		return session, err
+	}
+	return session, nil
+}
+
 func writeToFile(session Session) error {
 	filename := fmt.Sprintf("%s.json", session.Name)
-	file, err := os.Create(filename)
+
+	configDir, err := os.UserHomeDir()
 	if err != nil {
 		return err
 	}
+
+	err = os.MkdirAll(fmt.Sprintf("%s/.config/tmuxSessions", configDir), os.ModePerm)
+	if err != nil {
+		return err
+	}
+
+	path := fmt.Sprintf("%s/.config/tmuxSessions/%s", configDir, filename)
+
+	file, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+
 	defer file.Close()
 
 	encoder := json.NewEncoder(file)

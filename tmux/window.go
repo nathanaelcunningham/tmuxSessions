@@ -38,3 +38,8 @@ func NewWindow(session string, window Window) {
 	cmd := []string{"new-window", "-d", "-t", fmt.Sprintf("%s:%d", session, window.Index), "-n", window.Name}
 	RunCommand(cmd)
 }
+
+func RestoreLayout(session string, window Window) {
+	cmd := []string{"select-layout", "-t", fmt.Sprintf("%s:%d", session, window.Index), window.Layout}
+	RunCommand(cmd)
+}

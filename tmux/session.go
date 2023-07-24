@@ -96,4 +96,13 @@ func RenameSession(session, newSession string) {
 	}
 }
 
-
+func SessionExists(session string) bool {
+	out := RunCommand([]string{"list-sessions", "-F", "#S"})
+	sessionList := strings.Split(out, "\n")
+	for _, sess := range sessionList {
+		if session == sess {
+			return true
+		}
+	}
+	return false
+}

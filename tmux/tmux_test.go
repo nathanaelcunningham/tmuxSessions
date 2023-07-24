@@ -5,6 +5,42 @@ import (
 	"testing"
 )
 
+func TestSessionExists(t *testing.T) {
+	session := "tmuxSessions"
+
+	got := SessionExists(session)
+	want := true
+
+	if got != want {
+		t.Error("failed")
+	}
+
+}
+func TestWindowExists(t *testing.T) {
+	session := ActiveSession()
+	index := 0
+
+	got := WindowExists(session, index)
+	want := true
+
+	if got != want {
+		t.Error("failed")
+	}
+}
+
+func TestPaneExists(t *testing.T) {
+	session := ActiveSession()
+	windowIndex := 0
+	paneIndex := 0
+
+	got := PaneExists(session, windowIndex, paneIndex)
+	want := true
+
+	if got != want {
+		t.Error("failed")
+	}
+}
+
 func TestGetWindows(t *testing.T) {
 	session := ActiveSession()
 	windows := GetWindows(session)

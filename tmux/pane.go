@@ -14,6 +14,16 @@ func NewPane(session string, windowIndex int, pane Pane) {
 	RunCommand(cmd)
 }
 
+func PaneExists(session string, windowIndex, paneIndex int) bool {
+	panes := GetPanes(session, windowIndex)
+	for _, p := range panes {
+		if p.Index == paneIndex {
+			return true
+		}
+	}
+	return false
+}
+
 func GetPanes(session string, windowIndex int) []Pane {
 	out := RunCommand([]string{"list-panes", "-t", fmt.Sprintf("%s:%d", session, windowIndex), "-F", pane_format()})
 
