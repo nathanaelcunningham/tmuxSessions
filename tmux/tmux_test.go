@@ -81,3 +81,11 @@ func TestNewWindow(t *testing.T) {
 	}
 	NewWindow(name, window)
 }
+
+func TestRestoreSession(t *testing.T) {
+	path := "/users/nathanael/.config/tmuxSessions/tmuxSessions.json"
+	err := RestoreSession(path)
+	if err != nil {
+		t.Error(err)
+	}
+}

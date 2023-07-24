@@ -12,7 +12,25 @@ func RestoreSession(filepath string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(session)
+
+	//Create session
+	if !SessionExists(session.Name) {
+		NewSession(session.Name)
+	}
+	//Create Windows
+	for _, window := range session.Windows {
+		if !WindowExists(session.Name, window.Index) {
+			NewWindow(session.Name, window)
+		}
+		//Create Panes
+		for _, pane := range window.Panes {
+			if !PaneExists(session.Name, window.Index, pane.Index) {
+				NewPane(session.Name, window.Index, pane)
+			}
+		}
+		//Restore Window Layout
+		RestoreLayout(session.Name, window)
+	}
 
 	return nil
 }
