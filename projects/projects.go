@@ -53,3 +53,12 @@ func RestoreProject(project Project) error {
 	}
 	return nil
 }
+
+func DeleteProject(project Project) error {
+	err := os.Remove(project.Filepath)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

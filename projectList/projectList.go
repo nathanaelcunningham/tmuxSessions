@@ -1,8 +1,6 @@
 package projectList
 
 import (
-	"log"
-
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
@@ -52,12 +50,6 @@ func (m ProjectList) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		h, v := docStyle.GetFrameSize()
 		m.list.SetSize(msg.Width-h, msg.Height-v)
 		return m, nil
-	case commands.SaveProjectCmd:
-		err := tmux.SaveSession(string(msg))
-		if err != nil {
-			log.Fatal(err)
-		}
-		m.RefreshProjects()
 	case tea.KeyMsg:
 		if state := m.list.FilterState(); state != list.Filtering {
 			switch {
@@ -73,20 +65,16 @@ func (m ProjectList) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				cmd := commands.ViewSessions()
 				cmds = tea.Batch(cmds, cmd)
 			case key.Matches(msg, keys.Delete):
-				// 	i, ok := m.list.SelectedItem().(ProjectItem)
-				// 	index := m.list.Cursor()
-				// 	if ok {
-				// 		tmux.DeleteProject(string(i))
-				// 		m.list.RemoveItem(index)
-				// 		m.list.ResetSelected()
-				// 	}
-				// case key.Matches(msg, keys.Rename):
-				// 	i, ok := m.list.SelectedItem().(ProjectItem)
-				// 	index := m.list.Index()
-				// 	if ok {
-				// 		cmd := commands.RenameProject(index, string(i))
-				// 		cmds = tea.Batch(cmds, cmd)
-				// 	}
+				i, ok := m.list.SelectedItem().(ProjectItem)
+				index := m.list.Cursor()
+				if ok {
+					projects.DeleteProject(projects.Project{
+						Name:     i.Name,
+						Filepath: i.Path,
+					})
+					m.list.RemoveItem(index)
+					m.list.ResetSelected()
+				}
 			}
 		}
 	}
