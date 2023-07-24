@@ -6,4 +6,5 @@ const (
 	NewSession ViewState = iota
 	RenameSession
 	SessionList
+	ProjectList
 )

@@ -43,3 +43,27 @@ func InputCancel() tea.Cmd {
 		return InputCancelCmd(true)
 	}
 }
+
+type SaveProjectCmd string
+
+func SaveProject(session string) tea.Cmd {
+	return func() tea.Msg {
+		return SaveProjectCmd(session)
+	}
+}
+
+type ViewSessionsCmd bool
+
+func ViewSessions() tea.Cmd {
+	return func() tea.Msg {
+		return ViewSessionsCmd(true)
+	}
+}
+
+type ViewProjectsCmd bool
+
+func ViewProjects() tea.Cmd {
+	return func() tea.Msg {
+		return ViewProjectsCmd(true)
+	}
+}

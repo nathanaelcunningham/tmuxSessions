@@ -1,4 +1,4 @@
-package sessionList
+package projectList
 
 import "github.com/charmbracelet/bubbles/key"
 
@@ -7,11 +7,8 @@ type KeyMap struct {
 	CursorDown   key.Binding
 	Filter       key.Binding
 	Delete       key.Binding
-	New          key.Binding
-	Rename       key.Binding
 	Select       key.Binding
-	SaveProject  key.Binding
-	ViewProjects key.Binding
+	ViewSessions key.Binding
 }
 
 var keys = KeyMap{
@@ -29,37 +26,22 @@ var keys = KeyMap{
 	),
 	Delete: key.NewBinding(
 		key.WithKeys("d"),
-		key.WithHelp("d", "delete session"),
-	),
-	New: key.NewBinding(
-		key.WithKeys("n"),
-		key.WithHelp("n", "new session"),
-	),
-	Rename: key.NewBinding(
-		key.WithKeys("r"),
-		key.WithHelp("r", "rename session"),
+		key.WithHelp("d", "delete project"),
 	),
 	Select: key.NewBinding(
 		key.WithKeys("enter"),
-		key.WithHelp("enter", "select session"),
+		key.WithHelp("enter", "load project"),
 	),
-	SaveProject: key.NewBinding(
-		key.WithKeys("s"),
-		key.WithHelp("s", "Save as Project"),
-	),
-	ViewProjects: key.NewBinding(
+	ViewSessions: key.NewBinding(
 		key.WithKeys("tab"),
-		key.WithHelp("tab", "View Projects"),
+		key.WithHelp("tab", "View Sessions"),
 	),
 }
 
 func (k KeyMap) OverrideKeys() []key.Binding {
 	return []key.Binding{
 		k.Select,
-		k.New,
-		k.Rename,
 		k.Delete,
-		k.SaveProject,
-		k.ViewProjects,
+		k.ViewSessions,
 	}
 }

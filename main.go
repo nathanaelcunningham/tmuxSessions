@@ -7,6 +7,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/nathanaelcunningham/tmuxSessions/commands"
 	"github.com/nathanaelcunningham/tmuxSessions/common"
+	"github.com/nathanaelcunningham/tmuxSessions/projectList"
 	"github.com/nathanaelcunningham/tmuxSessions/sessionInput"
 	"github.com/nathanaelcunningham/tmuxSessions/sessionList"
 	"github.com/nathanaelcunningham/tmuxSessions/tmux"
@@ -17,6 +18,7 @@ type model struct {
 	sessionList  sessionList.SessionList
 	searchTerm   string
 	sessionInput sessionInput.SessionInput
+	projectList  projectList.ProjectList
 }
 
 func (m model) Init() tea.Cmd {
@@ -52,6 +54,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 	case commands.InputCancelCmd:
 		m.state = common.SessionList
+	case commands.ViewSessionsCmd:
+		m.state = common.SessionList
+	case commands.ViewProjectsCmd:
+		m.state = common.ProjectList
+	case commands.SaveProjectCmd:
+		tmux.SaveSession(string(msg))
+		model := m.projectList.RefreshProjects()
+		m.projectList = model
 	}
 
 	switch m.state {
@@ -67,6 +77,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		model, cmd := m.sessionInput.Update(msg)
 		m.sessionInput = model.(sessionInput.SessionInput)
 		cmds = tea.Batch(cmds, cmd)
+	case common.ProjectList:
+		model, cmd := m.projectList.Update(msg)
+		m.projectList = model.(projectList.ProjectList)
+		cmds = tea.Batch(cmds, cmd)
 	}
 	return m, cmds
 }
@@ -79,6 +93,8 @@ func (m model) View() string {
 		return m.sessionInput.View()
 	case common.SessionList:
 		return m.sessionList.View()
+	case common.ProjectList:
+		return m.projectList.View()
 	default:
 		return m.sessionList.View()
 	}
@@ -86,15 +102,17 @@ func (m model) View() string {
 
 func main() {
 	l := sessionList.New()
+	p := projectList.New()
 
 	m := model{
 		state:        common.SessionList,
 		sessionList:  l,
 		searchTerm:   "",
 		sessionInput: sessionInput.New(),
+		projectList:  p,
 	}
-	p := tea.NewProgram(m)
-	if _, err := p.Run(); err != nil {
+	prog := tea.NewProgram(m)
+	if _, err := prog.Run(); err != nil {
 		fmt.Printf("error: %s", err)
 		os.Exit(1)
 	}

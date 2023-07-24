@@ -55,6 +55,9 @@ func (m SessionList) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					tmux.SwitchSession(string(i))
 					return m, tea.Quit
 				}
+			case key.Matches(msg, keys.ViewProjects):
+				cmd := commands.ViewProjects()
+				cmds = tea.Batch(cmds, cmd)
 			case key.Matches(msg, keys.Delete):
 				i, ok := m.list.SelectedItem().(SessionItem)
 				index := m.list.Cursor()
@@ -73,6 +76,12 @@ func (m SessionList) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case key.Matches(msg, keys.New):
 				cmd := commands.NewSession()
 				cmds = tea.Batch(cmds, cmd)
+			case key.Matches(msg, keys.SaveProject):
+				i, ok := m.list.SelectedItem().(SessionItem)
+				if ok {
+					cmd := commands.SaveProject(string(i))
+					cmds = tea.Batch(cmds, cmd)
+				}
 			}
 		}
 	}
