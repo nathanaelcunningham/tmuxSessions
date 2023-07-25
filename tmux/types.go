@@ -19,4 +19,5 @@ type Pane struct {
 	Title  string
 	Path   string
 	Active bool
+	ID     string
 }

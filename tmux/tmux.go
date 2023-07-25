@@ -24,9 +24,13 @@ func RestoreSession(filepath string) error {
 		}
 		//Create Panes
 		for _, pane := range window.Panes {
-			if !PaneExists(session.Name, window.Index, pane.Index) {
+			paneExists := PaneExists(session.Name, window.Index, pane.Index)
+			if paneExists == false {
 				NewPane(session.Name, window.Index, pane)
+			} else {
+				RespawnPane(session.Name, window.Index, pane)
 			}
+			ResizePane(session.Name,window.Index)
 		}
 		//Restore Window Layout
 		RestoreLayout(session.Name, window)

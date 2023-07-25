@@ -18,6 +18,7 @@ func pane_format() string {
 	format += delimiter
 	format += "#{pane_active}"
 	format += delimiter
+	format += "#{pane_id}"
 
 	return format
 }
