@@ -1,16 +1,7 @@
 ## TODO
-[x] new session
 [ ] override the help bar completely
-[ ] save session as project
-[ ] open saved project as session
-    [ ] project list
-
-
-
-## Restore Session 
-create session
-    create window
-        create all panes
-    restore window layout
-
-
+[ ] notifications on load session,save session
+[x] new session
+[x] save session as project
+[x] open saved project as session
+    [x] project list
