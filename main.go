@@ -28,6 +28,12 @@ func (m model) Init() tea.Cmd {
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmds tea.Cmd
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		pModel, pCmd := m.projectList.Update(msg)
+		sModel, sCmd := m.sessionList.Update(msg)
+		m.projectList = pModel.(projectList.ProjectList)
+		m.sessionList = sModel.(sessionList.SessionList)
+		cmds = tea.Batch(cmds, pCmd, sCmd)
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c":
